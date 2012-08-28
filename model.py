@@ -3,8 +3,10 @@ from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import *
 
+import config
 
-db = create_engine('postgres://major:hello@localhost/beta', echo_pool=True)
+
+db = create_engine(config.app.db.url, echo_pool=True)
 
 Session = sessionmaker(bind=db)
 Base = declarative_base()

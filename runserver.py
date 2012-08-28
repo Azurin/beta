@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 from controller import app
 from model import createDB
+import config
 
 
-# Create database if needed
-createDB();
+if __name__ == '__main__':
+	# Create database if needed
+	createDB();
 
-# Run the application
-app.run(debug=True)
+	# Run the application
+	app.run(config.app.webserver.host, config.app.webserver.port, debug=True)
 
