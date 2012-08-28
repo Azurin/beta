@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Book{% endblock %}
+
+{% block script %}
+	<script type="text/javascript">
+
+		String.prototype.htmlTagEscape = function() {
+			return this.replace(/&/g,'&amp;').replace( /</g, '&lt;').replace( />/g, '&gt;');
+		};
+
+		$(function(){
+			onNameChange();
+		});
+
+		function addAuthor() {
+			$("#other_authors option:selected").each(
+				function () {
+					// Copy to current_authors
+					$('#current_authors').append('<option value="' + $(this).val() + '">' + $(this).text().htmlTagEscape() + '</option>');
+
+					// Remove from other_authors
+					$(this).remove();
+				});
+		}
+
+		function removeAuthor() {
+			$("#current_authors option:selected").each(
+				function () {
+					// Copy to other_authors
+					$('#other_authors').append('<option value="' + $(this).val() + '">' + $(this).text().htmlTagEscape() + '</option>');
+
+					// Remove from current_authors
+					$(this).remove();
+				});
+		}
+
+		function onSave(){
+			var val = $("#book_name").val();
+			var data = {name : $.trim(val)};
+
+			$("#current_authors option").each(
+				function () {
+					data[$(this).val()] = $(this).text();
+				});
+
+			$.getJSON(
+			{% if book is defined %}
+			  "/book_save/{{ book.id }}",
+			{% else %}
+			  "/book_save",
+			{% endif %}
+			 data,
+			 function(data, code) {
+				if(!data.ok) {
+					alert(data.msg);
+				}
+				else {
+					window.location = '/';
+				}
+			 }
+			);
+		}
+
+		function onCancel(){
+			window.location = '/';
+		}
+
+		function onNameChange(){
+			var val = $("#book_name").val();
+			if ($.trim(val) == '')
+				$('#save_book').attr("disabled", true);
+			else
+				$('#save_book').attr("disabled", false);
+		}
+
+	</script>
+{% endblock %}
+
+{% block main %}
+	<h2 class="">
+	{% if book is defined %}
+		Edit Book
+	{% else %}
+		New Book
+	{% endif %}
+	</h2>
+
+	<p>
+		<strong>Name</strong><br>
+		<input id="book_name" type="text" onkeyup="onNameChange();"
+		{% if book is defined %}
+			value="{{ book.name }}"
+		{% endif %}
+		/>
+	</p>
+
+	<div class="span-8" style="text-align:center">
+	<p>
+		<strong>Other authors</strong><br>
+		<select id="other_authors" multiple="multiple" style="width: 300px">
+			{% for author in other_authors %}
+				<option value="{{ author.id }}"> {{ author.name }} </option>
+			{% endfor %}
+		</select>
+	</p>
+	</div>
+
+	<div class="span-8" style="text-align:center">
+		<br/><br/>
+		<input id="add_author" value="->" type="button" onclick="addAuthor();">
+		<br/>
+		<input id="remove_author" value="<-" type="button" onclick="removeAuthor();">
+	</div>
+
+	<div class="span-8 last" style="text-align:center">
+	<p>
+		<strong>Current book authors</strong><br>
+		<select id="current_authors" multiple="multiple" style="width: 300px">
+			{% for author in current_authors %}
+				<option value="{{ author.id }}"> {{ author.name }} </option>
+			{% endfor %}
+		</select>
+	</p>
+	</div>
+
+		<input id="save_book" value="Save" type="button" onclick="onSave();">
+		<input id="cancel_book" value="Cancel" type="button" onclick="onCancel();">
+{% endblock %}
+

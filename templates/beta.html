@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Main{% endblock %}
+
+{% block script %}
+	<script type="text/javascript">
+		function newBook(){
+			window.location = '/new_book'
+		}
+
+		function editBook(id){
+			window.location = '/edit_book/' + id
+		}
+
+		function removeBook(id){
+			if (confirm('This book will be removed from database')) {
+			  $.getJSON(
+			    "/remove_book",
+			   {'id': id},
+			   function(data, code) {
+				if(!data.ok) {
+					alert(data.msg);
+				}
+				else {
+					$('#btr' + id).remove();
+				}
+
+			   }
+			  );
+			}
+				
+		}
+
+		function searchBook() {
+			window.location = '/search_book'
+		}
+
+		function newAuthor(){
+			window.location = '/new_author'
+		}
+
+		function editAuthor(id){
+			window.location = '/edit_author/' + id
+		}
+
+		function removeAuthor(id){
+			if (confirm('This author will be removed from database')) {
+			  $.getJSON(
+			    "/remove_author",
+			   {'id': id},
+			   function(data, code) {
+				if(!data.ok) {
+					alert(data.msg);
+				}
+				else {
+					$('#atr' + id).remove();
+				}
+			   }
+			  );
+			}	
+		}
+	</script>
+{% endblock %}
+
+{% block main %}
+	<h2 class="">Book</h2>
+	<p>
+		<table id="bookTable" border="1">
+			{% for book in books %}
+				<tr id="btr{{ book.id }}">
+					<td width="10%"> {{ book.id }} </td>
+					<td width="80%" onclick="editBook({{ book.id }});" onmouseover="this.style.cursor='pointer'">{{ book.name }}</td>
+					<td width="10%">
+						<input type="button" onclick="removeBook({{ book.id }});" value="X">
+					</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</p>
+	<p>
+		<input id="new_book" value="New" type="button" onclick="newBook();">
+		<input id="search_book" value="Search" type="button" onclick="searchBook();">
+	</p>
+	
+	
+	<h2 class="">Author</h2>
+	<p>
+		<table id="authorTable" border="1">
+			{% for author in authors %}
+				<tr id="atr{{ author.id }}">
+					<td width="10%"> {{ author.id }} </td>
+					<td width="80%" onclick="editAuthor({{ author.id }});" onmouseover="this.style.cursor='pointer'"> {{ author.name }} </td>
+					<td width="10%">
+						<input type="button" onclick="removeAuthor({{ author.id }});" value="X">
+					</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</p>
+	<p>
+		<input id="new_author" value="New" type="button" onclick="newAuthor();">
+	</p>
+{% endblock %}
+
