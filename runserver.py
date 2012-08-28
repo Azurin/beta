@@ -7,5 +7,5 @@ from model import createDB
 createDB();
 
 # Run the application
-app.run('172.17.57.167', 5000, debug=True)
+app.run(debug=True)
 
